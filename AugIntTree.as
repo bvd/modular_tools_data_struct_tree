@@ -1,6 +1,5 @@
 package com.adeptive.modular.tools.data.struct.tree
 {
-	import mx.core.mx_internal;
 
 	/**
 	 * Augmented Interval Tree Class, based on RedBlackTree.
