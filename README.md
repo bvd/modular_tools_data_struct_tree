@@ -3,7 +3,6 @@ modular_tools_data_struct_tree
 
 @author ek.vandalen
 
-==================
 about this package
 ==================
 
@@ -17,8 +16,11 @@ Thus the RbTree was extended with AugIntTree (augmented interval tree) according
 
 AugIntTree was extended with SymIntTree (symmetrical interval tree) for faster multiple-interval and multiple-overlap retrieval.
 
+roadmap:
+========
 
-=======================
+A repository test_modular_tools_data_struct_tree will be added in the near future.
+
 Suggested improvements:
 =======================
 
