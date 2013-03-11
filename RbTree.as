@@ -23,7 +23,7 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 		 * 
 		 */		
 		override public function insert(data:Object):*{
-			
+			this.nullCursor();
 			var newNode:IRbTreeNode = this._createNode(data);
 			
 			//var ret:Boolean = false;
@@ -164,7 +164,7 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 		 * 
 		 */		
 		override public function remove(data:Object):*{
-			
+			this.nullCursor();
 			if(this.root === null) {
 				return null;
 			}
@@ -242,7 +242,7 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 			var storeFound:RbTreeNode;
 			// replace and remove if found
 			
-			var ret:IntervalNodeData = found ? found.export : null;
+			var ret:Object = found ? found.export : null;
 			
 			if(found != null) {
 				

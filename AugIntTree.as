@@ -87,7 +87,9 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 			}
 		}
 		/**
-		 * Removes the first node it can find that has corresponding IntervalData
+		 * Removes the first node it can find that has corresponding IntervalData and
+		 * nullifies the cursor.
+		 * 
 		 * @param data if this is not an IntervalData instance, an error is thrown.
 		 * @return the exported data of the removed node in the form as IntervalNodeData
 		 * 
@@ -99,7 +101,9 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 			return super.remove(data);
 		}
 		/**
-		 * Removes all nodes it can find that have corresponding IntervalData
+		 * Removes all nodes it can find that have corresponding IntervalData and
+		 * nullifies the cursor, also when it it not found.
+		 * 
 		 * @param data if this is not an IntervalData instance, an error is thrown.
 		 * @return An array of IntervalNodeData objects who correspond to the removed nodes.
 		 * 
@@ -114,24 +118,20 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 			return ret;
 		}
 		/**
+		 * Finds the first node with exactly the same start and end point. This action sets the
+		 * cursor to the node that was found, or to the last visited node when not found.
+		 * 
 		 * @return Returns null if not found, or the node object as IntervalNodeData
 		 */		
-		override public function find(data:Object):Object{
-			var res:ITreeNode = this._root;
-			while(res){
-				var c:int = this._comparator(data,res.data);
-				if(c == 0){
-					break;
-				}
-				res = res.get_child(c > 0);
-			}
-			var itvN:IntervalNode = res as IntervalNode;
-			return res ? new IntervalNodeData(itvN.id,itvN.start,itvN.end,itvN.data) : null;
+		override public function find(data:Object,set_cursor:Boolean = false):Object{
+			var res:Object = super.find(data,set_cursor);
+			return res ? new IntervalNodeData(IntervalNode(_found).id,res.start,res.end,res.data) : null;
 		}
 		/**
 		 * Finds all intervals that match exactly to the start and end of the data object.
 		 * It finds them by removing them as long as this has result. Then it remembers them
-		 * and puts them back in. 
+		 * and puts them back in. Because it has to modify the tree to find them all, and then
+		 * inserts them back in, it nullifies the cursor.
 		 * @param data IntervalData
 		 * @return an array containing IntervalNodeData objects of the nodes found.
 		 * 
@@ -149,28 +149,37 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 			return res;
 		}
 		/**
-		 * Get one interval that overlaps. 
+		 * Get one interval that overlaps. Sets the cursor to the node that was found,
+		 * or to the node that was last visited where the overlap could have been found.
+		 * 
 		 * @param data IntervalData for which to find an overlap.
 		 * @return the exported IntervalNodeData instance of the found node, or null.
 		 * 
 		 */		
 		public function findOverlap(data:IntervalData):IntervalNodeData{
 			var x:IntervalNode = _root;
+			this._cursor = x;
+			this._ancestors = [];
 			// x exists and does not overlap w. data
 			while(x != null && (  data.start > x.end ||  x.start > data.end ) ){
 				if(x.left){
 					var lc:IntervalNode = x.left as IntervalNode;
 					if(data.start <= lc.max){
+						this._ancestors.push(x);
 						x = lc;
+						this._cursor = x;
 						continue;
 					}
 				}
+				this._ancestors.push(x);
 				x = x.right as IntervalNode;
+				this._cursor = x;
 			}
 			return x ? x.export as IntervalNodeData : null;
 		}
 		/**
-		 * Get all intervals that overlap. 
+		 * Get all intervals that overlap. Because it has to remove the intervals it finds in order to find more,
+		 * and then inserts them back in, this function nullifies the cursor.
 		 * @param data IntervalData for which to find overlaps.
 		 * @return the exported IntervalNodeData instances of the found nodes in an Array, or an empty Array.
 		 * 

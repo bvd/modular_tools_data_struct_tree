@@ -41,12 +41,16 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 			return node;
 		}
 		/**
-		 * inserts a node into the tree 
+		 * inserts a node into the tree.
+		 * 
+		 * Watch out: this operation resets the cursor of the tree.
+		 *  
 		 * @param data The data to associate the node with
 		 * @return Null if it could not be inserted, else the resulting node export.
 		 * 
 		 */		
 		public function insert(data:Object):*{
+			this.nullCursor();
 			if(!this.root){
 				// empty tree
 				return this.init(data);
@@ -78,11 +82,15 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 		}
 		/**
 		 * Remove a node from the unbalanced binary tree.
+		 * 
+		 * Watch out: this operation nullifies the cursor of the tree!
+		 * 
 		 * @param data The associated data of the node to be removed.
 		 * @return export of the data of the removed node, or null if not found.
 		 * 
 		 */		
 		public function remove(data:Object):*{
+			this.nullCursor();
 			if(!this.root){
 				return null;
 			}

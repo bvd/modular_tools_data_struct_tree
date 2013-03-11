@@ -6,6 +6,9 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 		public function get end():int { return (this._data as IntervalData).end; }
 		public function get max():int { return _max; }
 		public function set max(val:int):void { _max = val; }
+		public static function resetID():void{
+			_incrementID = 0;
+		}
 		private static var _incrementID:int = 0;
 		private var _myID:int;
 		private var _max:int;
