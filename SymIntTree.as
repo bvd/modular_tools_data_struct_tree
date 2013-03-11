@@ -84,14 +84,13 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 		/**
 		 * Finds all intervals matching exactly with the given IntervalData input without having to remove and re-insert them.
 		 * The algorithm searches left to right, and it also searches subtrees where a match could possibly be, judging by subtree
-		 * low end (start) and high end (end) values. The cursor can react in the following manners:
+		 * low end (start) and high end (end) values.
 		 * 
-		 * If nothing was found, the cursor will point to the rightmost subtree where a match could possibly have been, but was not
+		 * If nothing was found, the cursor will point to the root.
 		 * 
-		 * If one match was found, the cursor will point to the matching node.
+		 * If one match was found, the cursor will point to that node.
 		 * 
-		 * If multiple nodes were found, the default cursor will point to the rightmost matching node while another cursor (by the 
-		 * name of minimum cursor) will point to the leftmost matching node. You can switch with the switchCursor method.
+		 * If multiple matches were found, the cursor will still point to the leftmost match.
 		 * 
 		 * @param data must be of type IntervalData
 		 * @return array of IntervalNodeData objects for the nodes it could find
@@ -105,9 +104,13 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 			var res:Array = [];
 			var candidates:Array = [];
 			var candidate:SymIntNode = this._root;
+			this._cursor = null;
 			while(candidate){
 				if(candidate.start == dint.start && candidate.end == dint.end){
 					res.push(candidate.export);
+					if(!this._cursor){
+						this._cursor = candidate;
+					}
 				}
 				var lc:SymIntNode = candidate.left as SymIntNode;
 				if(lc){
@@ -123,12 +126,14 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 				}
 				candidate = candidates.length ? candidates.pop() : null;
 			}
+			if(!this._cursor){
+				this._cursor = this._root;
+			}
 			return res;
 		}
 		/**
 		 * This function is better than the AugIntTree findOverlaps, because it can find the 
-		 * overlaps, well, not so efficient as with contained node lists, but still rather
-		 * efficient, that is, without having to pull out and insert back in all nodes. 
+		 * overlaps without having to pull out and insert back in all nodes. 
 		 * @param data IntervalData
 		 * @return an array of IntervalNodeData objects corresponding to the nodes that were found
 		 * 
@@ -157,7 +162,6 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 				}
 				candidate = candidates.length ? candidates.pop() : null;
 			}
-			trace("alg ran " + count + " times");
 			return res;
 		}
 	}
