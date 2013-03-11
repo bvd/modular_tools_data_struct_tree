@@ -83,6 +83,16 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 		}
 		/**
 		 * Finds all intervals matching exactly with the given IntervalData input without having to remove and re-insert them.
+		 * The algorithm searches left to right, and it also searches subtrees where a match could possibly be, judging by subtree
+		 * low end (start) and high end (end) values. The cursor can react in the following manners:
+		 * 
+		 * If nothing was found, the cursor will point to the rightmost subtree where a match could possibly have been, but was not
+		 * 
+		 * If one match was found, the cursor will point to the matching node.
+		 * 
+		 * If multiple nodes were found, the default cursor will point to the rightmost matching node while another cursor (by the 
+		 * name of minimum cursor) will point to the leftmost matching node. You can switch with the switchCursor method.
+		 * 
 		 * @param data must be of type IntervalData
 		 * @return array of IntervalNodeData objects for the nodes it could find
 		 * 
