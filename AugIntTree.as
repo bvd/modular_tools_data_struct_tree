@@ -143,7 +143,7 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 				res.push(found);
 				found = remove(data) as IntervalNodeData;
 			}
-			var i:int = 0;
+			var i:uint = 0;
 			while(i < res.length){
 				var toInsert:IntervalNodeData = res[i] as IntervalNodeData;
 				insert(new IntervalData(toInsert.start,toInsert.end,toInsert.data));
@@ -195,7 +195,7 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 				remove(found);
 				found = findOverlap(data) as IntervalNodeData;
 			}
-			var i:int = 0;
+			var i:uint = 0;
 			while(i < res.length){
 				var toInsert:IntervalNodeData = res[i] as IntervalNodeData;
 				insert(new IntervalData(toInsert.start,toInsert.end,toInsert.data));
@@ -251,7 +251,7 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 				remove(found);
 				found = findContaining(data) as IntervalNodeData;
 			}
-			var i:int = 0;
+			var i:uint = 0;
 			while(i < res.length){
 				var toInsert:IntervalNodeData = res[i] as IntervalNodeData;
 				insert(new IntervalData(toInsert.start,toInsert.end,toInsert.data));
