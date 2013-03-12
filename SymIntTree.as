@@ -174,13 +174,13 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 				var lc:SymIntNode = candidate.left as SymIntNode;
 				if(lc){
 					if(!(lc.min > data.end ||  data.start > lc.max)){
-						candidates.push([lc,ancestors.concat([candidate])]);
+						candidates.push([lc, this._cursor ? [] : ancestors.concat([candidate])]);
 					}
 				}
 				var rc:SymIntNode = candidate.right as SymIntNode;
 				if(rc){
 					if(!(rc.min > data.end ||  data.start > rc.max)){
-						candidates.push([rc,ancestors.concat([candidate])]);
+						candidates.push([rc, this._cursor ? [] : ancestors.concat([candidate])]);
 					}
 				}
 				if(candidates.length){
