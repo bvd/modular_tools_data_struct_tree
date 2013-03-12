@@ -1,5 +1,7 @@
 package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 {
+	import flash.utils.ByteArray;
+
 	public class SymIntTree extends AugIntTree
 	{
 		/**
@@ -104,27 +106,36 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 			var res:Array = [];
 			var candidates:Array = [];
 			var candidate:SymIntNode = this._root;
+			var ancestors:Array = [];
 			this._cursor = null;
+			this._ancestors = [];
 			while(candidate){
 				if(candidate.start == dint.start && candidate.end == dint.end){
 					res.push(candidate.export);
 					if(!this._cursor){
 						this._cursor = candidate;
+						this._ancestors = ancestors;
 					}
 				}
 				var lc:SymIntNode = candidate.left as SymIntNode;
 				if(lc){
 					if(!(lc.min > dint.end ||  dint.start > lc.max)){
-						candidates.push(lc);
+						candidates.push([lc,ancestors.concat([candidate])]);
 					}
 				}
 				var rc:SymIntNode = candidate.right as SymIntNode;
 				if(rc){
 					if(!(rc.min > dint.end ||  dint.start > rc.max)){
-						candidates.push(rc);
+						candidates.push([rc,ancestors.concat([candidate])]);
 					}
 				}
-				candidate = candidates.length ? candidates.pop() : null;
+				if(candidates.length){
+					var nw:Array = candidates.pop();
+					candidate = nw[0];
+					ancestors = nw[1];
+				}else{
+					break;
+				}
 			}
 			if(!this._cursor){
 				this._cursor = this._root;
@@ -133,7 +144,14 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 		}
 		/**
 		 * This function is better than the AugIntTree findOverlaps, because it can find the 
-		 * overlaps without having to pull out and insert back in all nodes. 
+		 * overlaps without having to pull out and insert back in all nodes.
+		 * 
+		 * If no overlap was found, the cursor will point to the root of the tree.
+		 * 
+		 * If one overlap was found, the cursor will point to that overlap.
+		 * 
+		 * If multiple overlaps were found, the cursor will still point to the left most overlap.
+		 *  
 		 * @param data IntervalData
 		 * @return an array of IntervalNodeData objects corresponding to the nodes that were found
 		 * 
@@ -142,25 +160,87 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 			var res:Array = [];
 			var candidates:Array = [];
 			var candidate:SymIntNode = this._root;
-			var count:int = 0;
+			var ancestors:Array = [];
+			this._cursor = null;
+			this._ancestors = [];
 			while(candidate){
-				count++;
 				if( ! (data.start > candidate.end ||  candidate.start > data.end ) ){
 					res.push(candidate.export);
+					if(!this._cursor){
+						this._cursor = candidate;
+						this._ancestors = ancestors;
+					}
 				}
 				var lc:SymIntNode = candidate.left as SymIntNode;
 				if(lc){
 					if(!(lc.min > data.end ||  data.start > lc.max)){
-						candidates.push(lc);
+						candidates.push([lc,ancestors.concat([candidate])]);
 					}
 				}
 				var rc:SymIntNode = candidate.right as SymIntNode;
 				if(rc){
 					if(!(rc.min > data.end ||  data.start > rc.max)){
-						candidates.push(rc);
+						candidates.push([rc,ancestors.concat([candidate])]);
 					}
 				}
-				candidate = candidates.length ? candidates.pop() : null;
+				if(candidates.length){
+					var nw:Array = candidates.pop();
+					candidate = nw[0];
+					ancestors = nw[1];
+				}else{
+					break;
+				}
+			}
+			return res;
+		}
+		/**
+		 * This function is better than the AugIntTree findContainers, because it can find the 
+		 * nodes without having to pull out and insert back in all nodes.
+		 * 
+		 * If no completely overlapping node was found, the cursor will point to the root of the tree.
+		 * 
+		 * If one result was found, the cursor will point to that result.
+		 * 
+		 * If multiple were found, the cursor will still point to the left most result.
+		 *  
+		 * @param data IntervalData
+		 * @return an array of IntervalNodeData objects corresponding to the nodes that were found
+		 * 
+		 */	
+		override public function findContainers(data:IntervalData):Array{
+			var res:Array = [];
+			var candidates:Array = [];
+			var candidate:SymIntNode = this._root;
+			var ancestors:Array = [];
+			this._cursor = null;
+			this._ancestors = [];
+			while(candidate){
+				if( ! ( candidate.start > data.start || candidate.end < data.end ) ){
+					res.push(candidate.export);
+					if(!this._cursor){
+						this._cursor = candidate;
+						this._ancestors = ancestors;
+					}
+				}
+				var lc:SymIntNode = candidate.left as SymIntNode;
+				if(lc){
+					if(!(lc.min > data.start || data.end > lc.max)){
+						candidates.push([lc,ancestors.concat([candidate])]);
+					}
+				}
+				var rc:SymIntNode = candidate.right as SymIntNode;
+				if(rc){
+					if(!(rc.min > data.start ||  data.end > rc.max)){
+						candidates.push([rc,ancestors.concat([candidate])]);
+					}
+				}
+				if(candidates.length){
+					var nw:Array = candidates.pop();
+					candidate = nw[0];
+					ancestors = nw[1];
+				}else{
+					break;
+				}
 			}
 			return res;
 		}

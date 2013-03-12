@@ -143,8 +143,11 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 				res.push(found);
 				found = remove(data) as IntervalNodeData;
 			}
-			for(var i:int = 0, len:int = res.length; i < len; i++){
-				insert(new IntervalData(res[i].start,res[i].end,res[i].data));
+			var i:int = 0;
+			while(i < res.length){
+				var toInsert:IntervalNodeData = res[i] as IntervalNodeData;
+				insert(new IntervalData(toInsert.start,toInsert.end,toInsert.data));
+				i++;
 			}
 			return res;
 		}
@@ -192,9 +195,67 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 				remove(found);
 				found = findOverlap(data) as IntervalNodeData;
 			}
-			for(var i:int = 0, len:int = res.length; i < len; i++){
+			var i:int = 0;
+			while(i < res.length){
 				var toInsert:IntervalNodeData = res[i] as IntervalNodeData;
 				insert(new IntervalData(toInsert.start,toInsert.end,toInsert.data));
+				i++;
+			}
+			return res;
+		}
+		/**
+		 * Find one interval that completely overlaps another interval 
+		 * i.e. return.start <= data.start && return.end >= data.end
+		 * 
+		 * Sets the cursor to the node that was found,
+		 * or to the node that was last visited where the overlap could have been found.
+		 * 
+		 * @param data IntervalData for which to find a 'container'
+		 * @return the exported IntervalNodeData instance of the found node, or null.
+		 * 
+		 */		
+		public function findContaining(data:IntervalData):IntervalNodeData{
+			var x:IntervalNode = _root;
+			this._cursor = x;
+			this._ancestors = [];
+			// x exists and does not 'contain' data
+			while(x != null && (  x.start > data.start || x.end < data.end ) ){
+				if(x.left){
+					var lc:IntervalNode = x.left as IntervalNode;
+					if(data.start <= lc.max && data.end <= lc.max){
+						this._ancestors.push(x);
+						x = lc;
+						this._cursor = x;
+						continue;
+					}
+				}
+				this._ancestors.push(x);
+				x = x.right as IntervalNode;
+				this._cursor = x;
+			}
+			return x ? x.export as IntervalNodeData : null;
+		}
+		/**
+		 * Get all intervals that completely overlap another interval. 
+		 * Because it has to remove the intervals it finds, in order to find more,
+		 * and then inserts them back in, this function nullifies the cursor.
+		 * @param data IntervalData for which to find containing intervals.
+		 * @return the exported IntervalNodeData instances of the found nodes in an Array, or an empty Array.
+		 * 
+		 */		
+		public function findContainers(data:IntervalData):Array{
+			var res:Array = [];
+			var found:IntervalNodeData = findContaining(data) as IntervalNodeData;
+			while(found){
+				res.push(found);
+				remove(found);
+				found = findContaining(data) as IntervalNodeData;
+			}
+			var i:int = 0;
+			while(i < res.length){
+				var toInsert:IntervalNodeData = res[i] as IntervalNodeData;
+				insert(new IntervalData(toInsert.start,toInsert.end,toInsert.data));
+				i++;
 			}
 			return res;
 		}
