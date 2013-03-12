@@ -43,7 +43,7 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 		/**
 		 * inserts a node into the tree.
 		 * 
-		 * Watch out: this operation resets the cursor of the tree.
+		 * Watch out: this operation resets the internal cursor of the tree and renders others invalid.
 		 *  
 		 * @param data The data to associate the node with
 		 * @return Null if it could not be inserted, else the resulting node export.

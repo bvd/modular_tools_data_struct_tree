@@ -120,11 +120,12 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 		/**
 		 * Finds the first node with exactly the same start and end point. This action sets the
 		 * cursor to the node that was found, or to the last visited node when not found.
-		 * 
+		 * @param data The data to match.
+		 * @param c_cursor. The cursor to modidy (see superclass documentation). If you do not specify c_cursor, the tree's own cursor is used.
 		 * @return Returns null if not found, or the node object as IntervalNodeData
 		 */		
-		override public function find(data:Object,set_cursor:Boolean = false):Object{
-			var res:Object = super.find(data,set_cursor);
+		override public function find(data:Object,c_cursor:TreeBaseCursor = null):Object{
+			var res:Object = super.find(data,c_cursor);
 			return res ? new IntervalNodeData(IntervalNode(_found).id,res.start,res.end,res.data) : null;
 		}
 		/**
@@ -133,10 +134,11 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 		 * and puts them back in. Because it has to modify the tree to find them all, and then
 		 * inserts them back in, it nullifies the cursor.
 		 * @param data IntervalData
+		 * @param c_cursor TreeBaseCursor to use in overrides. Not modified by the AugIntTree base implementation of findOverlaps.
 		 * @return an array containing IntervalNodeData objects of the nodes found.
 		 * 
 		 */		
-		public function findAll(data:Object):Array{
+		public function findAll(data:Object, c_cursor:TreeBaseCursor = null):Array{
 			var res:Array = [];
 			var found:IntervalNodeData = remove(data) as IntervalNodeData;
 			while(found){
@@ -156,38 +158,42 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 		 * or to the node that was last visited where the overlap could have been found.
 		 * 
 		 * @param data IntervalData for which to find an overlap.
+		 * @param c_cursor Custom cursor. If you do not specify it, the tree's own internal cursor is used.
 		 * @return the exported IntervalNodeData instance of the found node, or null.
 		 * 
 		 */		
-		public function findOverlap(data:IntervalData):IntervalNodeData{
+		public function findOverlap(data:IntervalData,c_cursor:TreeBaseCursor = null):IntervalNodeData{
+			if(!c_cursor) c_cursor = this.cursor;
 			var x:IntervalNode = _root;
-			this._cursor = x;
-			this._ancestors = [];
+			c_cursor.node = x;
+			c_cursor.ancestors = [];
 			// x exists and does not overlap w. data
 			while(x != null && (  data.start > x.end ||  x.start > data.end ) ){
 				if(x.left){
 					var lc:IntervalNode = x.left as IntervalNode;
 					if(data.start <= lc.max){
-						this._ancestors.push(x);
+						c_cursor.ancestors.push(x);
 						x = lc;
-						this._cursor = x;
+						c_cursor.node = x;
 						continue;
 					}
 				}
-				this._ancestors.push(x);
+				c_cursor.ancestors.push(x);
 				x = x.right as IntervalNode;
-				this._cursor = x;
+				c_cursor.node = x;
 			}
 			return x ? x.export as IntervalNodeData : null;
 		}
 		/**
 		 * Get all intervals that overlap. Because it has to remove the intervals it finds in order to find more,
-		 * and then inserts them back in, this function nullifies the cursor.
+		 * and then inserts them back in, this function nullifies the tree's own cursor.
+		 * 
 		 * @param data IntervalData for which to find overlaps.
+		 * @param c_cursor TreeBaseCursor to use in overrides. Not modified by the AugIntTree base implementation of findOverlaps.
 		 * @return the exported IntervalNodeData instances of the found nodes in an Array, or an empty Array.
 		 * 
 		 */		
-		public function findOverlaps(data:IntervalData):Array{
+		public function findOverlaps(data:IntervalData, c_cursor:TreeBaseCursor = null):Array{
 			var res:Array = [];
 			var found:IntervalNodeData = findOverlap(data) as IntervalNodeData;
 			while(found){
@@ -211,39 +217,44 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 		 * or to the node that was last visited where the overlap could have been found.
 		 * 
 		 * @param data IntervalData for which to find a 'container'
+		 * @param c_cursor TreeBaseCursor to modify by the search operation. If you do not specify a cursor, the tree's cursor is used.
 		 * @return the exported IntervalNodeData instance of the found node, or null.
 		 * 
 		 */		
-		public function findContaining(data:IntervalData):IntervalNodeData{
+		public function findContaining(data:IntervalData, c_cursor:TreeBaseCursor = null):IntervalNodeData{
+			if(!c_cursor){
+				c_cursor = this.cursor;
+			}
 			var x:IntervalNode = _root;
-			this._cursor = x;
-			this._ancestors = [];
+			c_cursor.node = x;
+			c_cursor.ancestors = [];
 			// x exists and does not 'contain' data
 			while(x != null && (  x.start > data.start || x.end < data.end ) ){
 				if(x.left){
 					var lc:IntervalNode = x.left as IntervalNode;
 					if(data.start <= lc.max && data.end <= lc.max){
-						this._ancestors.push(x);
+						c_cursor.ancestors.push(x);
 						x = lc;
-						this._cursor = x;
+						c_cursor.node = x;
 						continue;
 					}
 				}
-				this._ancestors.push(x);
+				c_cursor.ancestors.push(x);
 				x = x.right as IntervalNode;
-				this._cursor = x;
+				c_cursor.node = x;
 			}
 			return x ? x.export as IntervalNodeData : null;
 		}
 		/**
 		 * Get all intervals that completely overlap another interval. 
 		 * Because it has to remove the intervals it finds, in order to find more,
-		 * and then inserts them back in, this function nullifies the cursor.
+		 * and then inserts them back in, this function nullifies the tree's internal cursor.
 		 * @param data IntervalData for which to find containing intervals.
+		 * @param c_cursor TreeBaseCursor to use in overrides. Not modified by the AugIntTree base implementation of findOverlaps.
 		 * @return the exported IntervalNodeData instances of the found nodes in an Array, or an empty Array.
 		 * 
 		 */		
-		public function findContainers(data:IntervalData):Array{
+		public function findContainers(data:IntervalData,c_cursor:TreeBaseCursor = null):Array{
 			var res:Array = [];
 			var found:IntervalNodeData = findContaining(data) as IntervalNodeData;
 			while(found){

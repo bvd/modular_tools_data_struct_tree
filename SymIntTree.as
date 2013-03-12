@@ -92,13 +92,17 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 		 * 
 		 * If one match was found, the cursor will point to that node.
 		 * 
-		 * If multiple matches were found, the cursor will still point to the leftmost match.
+		 * If multiple matches were found, the cursor will still point to the first match.
 		 * 
 		 * @param data must be of type IntervalData
+		 * @param c_cursor TreeBaseCursor If you do not specify a cursor, the tree's own cursor is used.
 		 * @return array of IntervalNodeData objects for the nodes it could find
 		 * 
 		 */		
-		override public function findAll(data:Object):Array{
+		override public function findAll(data:Object,c_cursor:TreeBaseCursor = null):Array{
+			if(!c_cursor){
+				c_cursor = this.cursor;
+			}
 			var dint:IntervalData = data as IntervalData;
 			if(!dint){
 				throw new Error("data for SymIntTree.findAll must be IntervalData");
@@ -107,26 +111,26 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 			var candidates:Array = [];
 			var candidate:SymIntNode = this._root;
 			var ancestors:Array = [];
-			this._cursor = null;
-			this._ancestors = [];
+			c_cursor.node = null;
+			c_cursor.ancestors = [];
 			while(candidate){
 				if(candidate.start == dint.start && candidate.end == dint.end){
 					res.push(candidate.export);
-					if(!this._cursor){
-						this._cursor = candidate;
-						this._ancestors = ancestors;
+					if(!c_cursor.node){
+						c_cursor.node = candidate;
+						c_cursor.ancestors = ancestors;
 					}
 				}
 				var lc:SymIntNode = candidate.left as SymIntNode;
 				if(lc){
 					if(!(lc.min > dint.end ||  dint.start > lc.max)){
-						candidates.push([lc,ancestors.concat([candidate])]);
+						candidates.push([lc, c_cursor.node ? [] : ancestors.concat([candidate])]);
 					}
 				}
 				var rc:SymIntNode = candidate.right as SymIntNode;
 				if(rc){
 					if(!(rc.min > dint.end ||  dint.start > rc.max)){
-						candidates.push([rc,ancestors.concat([candidate])]);
+						candidates.push([rc, c_cursor.node ? [] : ancestors.concat([candidate])]);
 					}
 				}
 				if(candidates.length){
@@ -137,8 +141,8 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 					break;
 				}
 			}
-			if(!this._cursor){
-				this._cursor = this._root;
+			if(!c_cursor.node){
+				c_cursor.node = this._root;
 			}
 			return res;
 		}
@@ -153,34 +157,38 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 		 * If multiple overlaps were found, the cursor will still point to the left most overlap.
 		 *  
 		 * @param data IntervalData
+		 * @param c_cursor TreeBaseCursor to use, if you do not specify it, the tree's own cursor is used.
 		 * @return an array of IntervalNodeData objects corresponding to the nodes that were found
 		 * 
 		 */		
-		override public function findOverlaps(data:IntervalData):Array{
+		override public function findOverlaps(data:IntervalData, c_cursor:TreeBaseCursor = null):Array{
+			if(!c_cursor){
+				c_cursor = this.cursor;
+			}
 			var res:Array = [];
 			var candidates:Array = [];
 			var candidate:SymIntNode = this._root;
 			var ancestors:Array = [];
-			this._cursor = null;
-			this._ancestors = [];
+			c_cursor.node = null;
+			c_cursor.ancestors = [];
 			while(candidate){
 				if( ! (data.start > candidate.end ||  candidate.start > data.end ) ){
 					res.push(candidate.export);
-					if(!this._cursor){
-						this._cursor = candidate;
-						this._ancestors = ancestors;
+					if(!c_cursor.node){
+						c_cursor.node = candidate;
+						c_cursor.ancestors = ancestors;
 					}
 				}
 				var lc:SymIntNode = candidate.left as SymIntNode;
 				if(lc){
 					if(!(lc.min > data.end ||  data.start > lc.max)){
-						candidates.push([lc, this._cursor ? [] : ancestors.concat([candidate])]);
+						candidates.push([lc, c_cursor.node ? [] : ancestors.concat([candidate])]);
 					}
 				}
 				var rc:SymIntNode = candidate.right as SymIntNode;
 				if(rc){
 					if(!(rc.min > data.end ||  data.start > rc.max)){
-						candidates.push([rc, this._cursor ? [] : ancestors.concat([candidate])]);
+						candidates.push([rc, c_cursor.node ? [] : ancestors.concat([candidate])]);
 					}
 				}
 				if(candidates.length){
@@ -204,34 +212,38 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 		 * If multiple were found, the cursor will still point to the left most result.
 		 *  
 		 * @param data IntervalData
+		 * @param c_cursor If you do not speficy a cursor, the internal tree's cursor is used.
 		 * @return an array of IntervalNodeData objects corresponding to the nodes that were found
 		 * 
 		 */	
-		override public function findContainers(data:IntervalData):Array{
+		override public function findContainers(data:IntervalData,c_cursor:TreeBaseCursor = null):Array{
+			if(!c_cursor){
+				c_cursor = this.cursor;
+			}
 			var res:Array = [];
 			var candidates:Array = [];
 			var candidate:SymIntNode = this._root;
 			var ancestors:Array = [];
-			this._cursor = null;
-			this._ancestors = [];
+			c_cursor.node = null;
+			c_cursor.ancestors = [];
 			while(candidate){
 				if( ! ( candidate.start > data.start || candidate.end < data.end ) ){
 					res.push(candidate.export);
-					if(!this._cursor){
-						this._cursor = candidate;
-						this._ancestors = ancestors;
+					if(!c_cursor.node){
+						c_cursor.node = candidate;
+						c_cursor.ancestors = ancestors;
 					}
 				}
 				var lc:SymIntNode = candidate.left as SymIntNode;
 				if(lc){
 					if(!(lc.min > data.start || data.end > lc.max)){
-						candidates.push([lc,ancestors.concat([candidate])]);
+						candidates.push([lc, c_cursor.node ? [] : ancestors.concat([candidate]) ]);
 					}
 				}
 				var rc:SymIntNode = candidate.right as SymIntNode;
 				if(rc){
 					if(!(rc.min > data.start ||  data.end > rc.max)){
-						candidates.push([rc,ancestors.concat([candidate])]);
+						candidates.push([rc, c_cursor.node ? [] : ancestors.concat([candidate]) ]);
 					}
 				}
 				if(candidates.length){
