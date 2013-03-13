@@ -6,7 +6,7 @@ modular_tools_data_struct_tree
 about this package
 ==================
 
-Thanks to https://github.com/vadimg/js_bintrees & friends.
+Big thanks to https://github.com/vadimg/js_bintrees & friends.
 
 This translation and extension of https://github.com/vadimg/js_bintrees (javascript) is also released under MIT license.
 
