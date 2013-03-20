@@ -3,6 +3,26 @@ modular_tools_data_struct_tree
 
 @author ek.vandalen
 
+how to commit
+=============
+
+What should I include in my commit message?
+The three basic things to include are a summary or title, 
+a detailed description, and a tracking or ticket number, 
+if it's applicable. Here is a sample git commit with all 
+that information:
+
+Fixed bug where user can't signup.
+
+Users were unable to register if they hadn't visited the plans
+and pricing page because we expected that tracking
+information to exist for the logs we create after a user
+signs up.  I fixed this by adding a check to the logger
+to ensure that if that information was not available
+we weren't trying to write it.
+
+[Fixes #2873942]
+
 about this package
 ==================
 
