@@ -45,7 +45,7 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 		 * 
 		 */		
 		public function find(data:Object, c_cursor:TreeBaseCursor = null):Object{
-			if(!cursor) c_cursor = this.cursor;
+			if(!c_cursor) c_cursor = this.cursor;
 			c_cursor.ancestors = [];
 			var res:ITreeNode = this._root;
 			while(res){

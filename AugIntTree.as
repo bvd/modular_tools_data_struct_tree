@@ -178,9 +178,11 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 						continue;
 					}
 				}
-				c_cursor.ancestors.push(x);
+				if(x.right){
+					c_cursor.ancestors.push(x);
+					c_cursor.node = x.right;
+				}
 				x = x.right as IntervalNode;
-				c_cursor.node = x;
 			}
 			return x ? x.export as IntervalNodeData : null;
 		}
@@ -239,9 +241,11 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 						continue;
 					}
 				}
-				c_cursor.ancestors.push(x);
+				if(x.right){
+					c_cursor.ancestors.push(x);
+					c_cursor.node = x.right;
+				}
 				x = x.right as IntervalNode;
-				c_cursor.node = x;
 			}
 			return x ? x.export as IntervalNodeData : null;
 		}
