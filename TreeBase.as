@@ -230,5 +230,49 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 		public function nullCursor():void{
 			this._cursor = new TreeBaseCursor();
 		}
+		/**
+		 * The tree can return the next node (from the cursor position) that matches a criterium. The criterium
+		 * will operate on the node data. The current cursor position will be tested first.
+		 *  
+		 * @param criterium A function that should operate on the node data and return a boolean.
+		 * @param c_cursor If you give no cursor, the tree's own cursor is used.
+		 * @return 
+		 * 
+		 */		
+		public function getNextMatch(criterium:Function, c_cursor:TreeBaseCursor = null):Object{
+			if(!(c_cursor)) c_cursor = this.cursor;
+			var node:ITreeNode = c_cursor.node;
+			while(node){
+				if(criterium(node)){
+					break;
+				}else{
+					this.next(c_cursor);
+					node = c_cursor.node;
+				}
+			}
+			return node ? node.data : null;
+		}
+		/**
+		 * The tree can return the previous node (from the cursor position) that matches a criterium. The criterium
+		 * will operate on the node data. The current cursor position will be tested first.
+		 *  
+		 * @param criterium A function that should operate on the node data and return a boolean.
+		 * @param c_cursor If you give no cursor, the tree's own cursor is used.
+		 * @return 
+		 * 
+		 */		
+		public function getPrevMatch(criterium:Function, c_cursor:TreeBaseCursor = null):Object{
+			if(!(c_cursor)) c_cursor = this.cursor;
+			var node:ITreeNode = c_cursor.node;
+			while(node){
+				if(criterium(node)){
+					break;
+				}else{
+					this.prev(c_cursor);
+					node = c_cursor.node;
+				}
+			}
+			return node ? node.data : null;
+		}
 	}
 }

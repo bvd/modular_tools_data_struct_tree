@@ -12,6 +12,9 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 			this._data = data;
 			this._red = true;
 		}	
+		public function get rank():uint{ return _rank; }
+		public function set rank(val:uint):void{ this._rank = val; }
+		private var _rank:uint; 
 		/**
 		 * 
 		 * @inheritDoc 
