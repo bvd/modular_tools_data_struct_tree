@@ -18,5 +18,8 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 			_end = end;
 			super();
 		}
+		public function toString():String{
+			return "[IntervalData " + _start + " - "  + _end + "]";
+		}
 	}
 }

@@ -9,7 +9,7 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 			_id = id;
 			super(start,end,data);
 		}
-		public function toString():String{
+		override public function toString():String{
 			return this.id.toString() + " " + this.start.toString() + '-' + this.end.toString();
 		}
 		public function get str():String{

@@ -241,16 +241,15 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 		 */		
 		public function getNextMatch(criterium:Function, c_cursor:TreeBaseCursor = null):Object{
 			if(!(c_cursor)) c_cursor = this.cursor;
-			var node:ITreeNode = c_cursor.node;
-			while(node){
-				if(criterium(node)){
+			this.next(c_cursor);
+			while(c_cursor.node){
+				if(criterium(c_cursor.node.data)){
 					break;
 				}else{
 					this.next(c_cursor);
-					node = c_cursor.node;
 				}
 			}
-			return node ? node.data : null;
+			return c_cursor.node ? c_cursor.node.data : null;
 		}
 		/**
 		 * The tree can return the previous node (from the cursor position) that matches a criterium. The criterium
@@ -263,16 +262,15 @@ package nl.hku.kmt.ikc.as3.modular.tools.data.struct.tree
 		 */		
 		public function getPrevMatch(criterium:Function, c_cursor:TreeBaseCursor = null):Object{
 			if(!(c_cursor)) c_cursor = this.cursor;
-			var node:ITreeNode = c_cursor.node;
-			while(node){
-				if(criterium(node)){
+			this.prev(c_cursor);
+			while(c_cursor.node){
+				if(criterium(c_cursor.node.data)){
 					break;
 				}else{
 					this.prev(c_cursor);
-					node = c_cursor.node;
 				}
 			}
-			return node ? node.data : null;
+			return c_cursor.node ? c_cursor.node.data : null;
 		}
 	}
 }
